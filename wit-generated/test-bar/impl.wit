@@ -1,0 +1,28 @@
+package test:bar;
+
+interface test-bar {
+  use test:types/types.{
+    test-bar-test-bar-record as t1,
+    test-foo-test-foo-record as t2,
+    test-foo-test-foo-resource as t3,
+  };
+
+  type test-bar-record = t1;
+  resource test-bar-resource {
+    constructor();
+  }
+
+  own-type: func() -> test-bar-record;
+  forwarded-type: func() -> t2;
+  own-resource: func() -> test-bar-resource;
+  forwarded-resource: func(res: t3) -> t3;
+  add: func(value: u64);
+  get: func() -> u64;
+}
+
+world component {
+  import  golem:api/host@1.1.6;
+  import test:bar-api/test-bar;
+  import test:foo-api/test-foo;
+  export test-bar;
+}

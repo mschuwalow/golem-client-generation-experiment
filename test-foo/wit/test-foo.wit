@@ -1,0 +1,30 @@
+package test:foo;
+
+// See https://component-model.bytecodealliance.org/design/wit.html for more details about the WIT syntax
+
+interface test-foo {
+  use wasi:clocks/wall-clock@0.2.0.{datetime};
+  use test:bar/test-bar-api.{test-bar-record, test-bar-resource};
+
+  record test-foo-record {
+    bar: u64
+  }
+
+  resource test-foo-resource {
+    constructor();
+  }
+
+  own-record: func() -> test-foo-record;
+  forwarded-record: func() -> test-bar-record;
+  own-resource: func() -> test-foo-resource;
+  forwarded-resource: func(res: test-bar-resource) -> test-bar-resource;
+  get-current-time: func() -> datetime;
+  add: func(value: u64);
+  get: func() -> u64;
+}
+
+world component {
+  import test:foo-api/test-foo;
+  import test:bar-api/test-bar;
+  export test-foo;
+}

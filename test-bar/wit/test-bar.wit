@@ -1,0 +1,29 @@
+package test:bar;
+
+// See https://component-model.bytecodealliance.org/design/wit.html for more details about the WIT syntax
+
+interface test-bar {
+  use test:bar/test-foo-api.{test-foo-record, test-foo-resource};
+
+  record test-bar-record {
+    bar: u64
+  }
+
+  resource test-bar-resource {
+    constructor();
+  }
+
+  own-record: func() -> test-foo-record;
+  forwarded-record: func() -> test-bar-record;
+  own-resource: func() -> test-foo-resource;
+  forwarded-resource: func(res: test-bar-resource) -> test-bar-resource;
+  add: func(value: u64);
+  get: func() -> u64;
+}
+
+world component {
+  import  golem:api/host@1.1.6;
+  import test:foo-api/test-foo;
+  import test:bar-api/test-bar-api;
+  export test-bar;
+}

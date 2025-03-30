@@ -1,0 +1,29 @@
+package test:foo;
+
+interface test-foo {
+  use wasi:clocks/wall-clock@0.2.0.{datetime};
+  use test:types/types.{
+    test-bar-test-bar-record as t1,
+    test-foo-test-foo-record as t2,
+    test-bar-test-bar-resource as t3,
+  };
+
+  type test-foo-record = t2;
+  resource test-foo-resource {
+    constructor();
+  }
+
+  own-record: func() -> test-foo-record;
+  forwarded-record: func() -> t1;
+  own-resource: func() -> test-foo-resource;
+  forwarded-resource: func(res: t3) -> t3;
+  get-current-time: func() -> datetime;
+  add: func(value: u64);
+  get: func() -> u64;
+}
+
+world component {
+  import test:foo-api/test-foo;
+  import test:bar-api/test-bar;
+  export test-foo;
+}

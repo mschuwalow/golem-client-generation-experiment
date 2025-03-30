@@ -1,0 +1,116 @@
+package test:composition;
+
+interface types {
+  record test-bar-test-bar-record {
+    bar: u64
+  }
+
+  // no constructor
+  resource test-bar-test-bar-resource {
+  }
+
+  record test-foo-test-foo-record {
+    foo: u64
+  }
+
+  // no constructor
+  resource test-foo-test-foo-resource {
+  }
+}
+
+interface test-foo {
+  use wasi:clocks/wall-clock@0.2.0.{datetime};
+  use types.{
+    test-bar-test-bar-record as t1,
+    test-foo-test-foo-record as t2,
+    test-bar-test-bar-resource as t3,
+  };
+
+  type test-foo-record = t2;
+  resource test-foo-resource {
+    constructor();
+  }
+
+  own-record: func() -> test-foo-record;
+  forwarded-record: func() -> t1;
+  own-resource: func() -> test-foo-resource;
+  forwarded-resource: func(res: t3) -> t3;
+  get-current-time: func() -> datetime;
+  add: func(value: u64);
+  get: func() -> u64;
+}
+
+interface test-foo-api {
+  use golem:rpc/types@0.2.0.{worker-id};
+  use wasi:clocks/wall-clock@0.2.0.{datetime};
+  use types.{
+    test-foo-test-foo-record as t1,
+    test-foo-test-foo-resource as t2,
+    test-bar-test-bar-record as t3,
+    test-bar-test-bar-resource as t4
+  };
+
+  type test-foo-record = t1;
+  type test-foo-resource = t2;
+
+  resource client {
+    constructor(worker-id: worker-id);
+
+    new-test-foo-resource: func() -> test-foo-resource;
+
+    own-record: func() -> test-foo-record;
+    forwarded-record: func() -> t3;
+    own-resource: func() -> test-foo-resource;
+    forwarded-resource: func(res: t4) -> t4;
+    get-current-time: func() -> datetime;
+    add: func(value: u64);
+    get: func() -> u64;
+  }
+}
+
+interface test-bar {
+  use types.{
+    test-bar-test-bar-record as t1,
+    test-foo-test-foo-record as t2,
+    test-foo-test-foo-resource as t3,
+  };
+
+  type test-bar-record = t1;
+  resource test-bar-resource {
+    constructor();
+  }
+
+  own-type: func() -> test-bar-record;
+  forwarded-type: func() -> t2;
+  own-resource: func() -> test-bar-resource;
+  forwarded-resource: func(res: t3) -> t3;
+  add: func(value: u64);
+  get: func() -> u64;
+}
+
+interface test-bar-api {
+  use golem:rpc/types@0.2.0.{worker-id};
+  use wasi:clocks/wall-clock@0.2.0.{datetime};
+  use types.{
+    test-bar-test-bar-record as t1,
+    test-bar-test-bar-resource as t2,
+    test-foo-test-foo-record as t3,
+    test-foo-test-foo-resource as t4
+  };
+
+  type test-bar-record = t1;
+  type test-bar-resource = t2;
+
+  resource client {
+    constructor(worker-id: worker-id);
+
+    new-test-bar-resource: func() -> test-bar-resource;
+
+    own-type: func() -> test-bar-record;
+    forwarded-type: func() -> t3;
+    own-resource: func() -> test-bar-resource;
+    forwarded-resource: func(res: t4) -> t4;
+    add: func(value: u64);
+    get: func() -> u64;
+  }
+}

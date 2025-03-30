@@ -1,0 +1,29 @@
+package test:foo-api;
+
+interface test-foo {
+  use golem:rpc/types@0.2.0.{worker-id};
+  use wasi:clocks/wall-clock@0.2.0.{datetime};
+  use test:types/types.{
+    test-foo-test-foo-record as t1,
+    test-foo-test-foo-resource as t2,
+    test-bar-test-bar-record as t3,
+    test-bar-test-bar-resource as t4
+  };
+
+  type test-foo-record = t1;
+  type test-foo-resource = t2;
+
+  resource client {
+    constructor(worker-id: worker-id);
+
+    new-test-foo-resource: func() -> test-foo-resource;
+
+    own-record: func() -> test-foo-record;
+    forwarded-record: func() -> t3;
+    own-resource: func() -> test-foo-resource;
+    forwarded-resource: func(res: t4) -> t4;
+    get-current-time: func() -> datetime;
+    add: func(value: u64);
+    get: func() -> u64;
+  }
+}
